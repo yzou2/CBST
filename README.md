@@ -62,4 +62,11 @@ This code heavily borrow [ResNet-38](https://github.com/itijyou/ademxapp)
 Contact: yzou2@andrew.cmu.edu
 
 If you finds this codes useful, please cite:
-{}
+
+@InProceedings{Zou_2018_ECCV,
+author = {Zou, Yang and Yu, Zhiding and Vijaya Kumar, B.V.K. and Wang, Jinsong},
+title = {Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
+booktitle = {The European Conference on Computer Vision (ECCV)},
+month = {September},
+year = {2018}
+}
