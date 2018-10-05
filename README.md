@@ -19,7 +19,8 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 
 [SYNTHIA-RAND-CITYSCAPES]()
 
-# source trained models (put source trained model in models/ folder)
+# source trained models 
+(put source trained model in models/ folder)
 [GTA-5](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0)
 [SYNTHIA]()
 
@@ -27,12 +28,15 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 [GTA2City](https://www.dropbox.com/s/1suk8xs48itd0fa/cityscapes_rna-a1_cls19_s8_ep-0000.params?dl=0)
 [SYNTHIA2CIty]()
 
-# spatial priors (put spatial prior in spatial_prior/gta/ folder)
+# spatial priors 
+(put spatial prior in spatial_prior/gta/ folder)
 [GTA-5]()
 
-# self-training (export PYTHONPATH=PYTHONPATH:./)
-# we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
+# self-training 
+(export PYTHONPATH=PYTHONPATH:./)
+we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
 GTA2Cityscapes:
+
 CBST-SP:
 
 
