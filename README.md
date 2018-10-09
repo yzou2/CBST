@@ -47,23 +47,25 @@ SYNTHIA2City:
 
 ### Setup
 - Datasets:
-[GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
+
+Download [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
+
 Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
 
-[Cityscapes](https://www.cityscapes-dataset.com/)
+Download [Cityscapes](https://www.cityscapes-dataset.com/)
 
-[SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
+Download [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
 
 - Source pretrained models:
-[GTA-5](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0)
+Download [source model](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0) trained in GTA-5.
 
-[SYNTHIA](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0)
+Download [source model](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0) trained in SYNTHIA.
 
 (put source trained model in models/ folder)
 
 - spatial priors 
 
-[GTA-5](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0)
+[Spatial priors](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0) from GTA-5
 
 (Spatial priors are only used in GTA2Cityscapes. Put the prior_array.mat in spatial_prior/gta/ folder)
 
