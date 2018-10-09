@@ -5,13 +5,31 @@ By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates eq
 ### Update
 - **2018.10.9**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
 
-Requirements:
+### Contents
+0. [Introduction](#introduction)
+0. [Citation](#citation)
+0. [Requirements](#requirements)
+0. [Usage](#usage)
+0. [Setup](#models)
+0. [Results](#results)
+0. [Note](#note)
+
+###requirements:
 [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU)
 PIL
 Python 2.7.x
 
+###citation
+If you finds this method or code useful, please cite:
+> @InProceedings{Zou_2018_ECCV,
+author = {Zou, Yang and Yu, Zhiding and Vijaya Kumar, B.V.K. and Wang, Jinsong},
+title = {Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
+booktitle = {The European Conference on Computer Vision (ECCV)},
+month = {September},
+year = {2018}
+}
 
-#Performance:
+###results:
 GTA2city:
 
 	| First Header  | Second Header |
@@ -25,7 +43,8 @@ GTA2city:
 
 SYNTHIA2City:
 
-# Dataset
+###setup
+
 [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
 Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
 
@@ -33,16 +52,16 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 
 [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
 
-# Source trained models 
+#models 
 (put source trained model in models/ folder)
 [GTA-5](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0)
 [SYNTHIA](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0)
 
-# Spatial priors 
+#spatial priors 
 (put spatial prior in spatial_prior/gta/ folder)
 [GTA-5](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0)
 
-# Self-training commands
+###usage
 (export PYTHONPATH=PYTHONPATH:./)
 we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
 SYNTHIA2City:
@@ -56,7 +75,7 @@ python issegm/script-self-paced-self-trained-segresnet.py --num-round 5 --test-s
 For CBST, set "--with-prior False". For ST, set "--kc-policy global" and "--with-prior False".
 
 
-# evaluate
+#evaluate
 Cityscapes
 
 GTA-5
@@ -66,16 +85,5 @@ SYNTHIA
 This code heavily borrow [ResNet-38](https://github.com/itijyou/ademxapp)
 
 Contact: yzou2@andrew.cmu.edu
-
-If you finds this codes useful, please cite:
-
-
-> @InProceedings{Zou_2018_ECCV,
-author = {Zou, Yang and Yu, Zhiding and Vijaya Kumar, B.V.K. and Wang, Jinsong},
-title = {Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
-booktitle = {The European Conference on Computer Vision (ECCV)},
-month = {September},
-year = {2018}
-}
 
 The model and code are available for non-commercial research purposes only.
