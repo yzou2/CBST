@@ -14,12 +14,12 @@ By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates eq
 0. [Results](#results)
 0. [Note](#note)
 
-###requirements:
+### Requirements:
 [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU)
 PIL
 Python 2.7.x
 
-###citation
+### Citation
 If you finds this method or code useful, please cite:
 > @InProceedings{Zou_2018_ECCV,
 author = {Zou, Yang and Yu, Zhiding and Vijaya Kumar, B.V.K. and Wang, Jinsong},
@@ -29,7 +29,7 @@ month = {September},
 year = {2018}
 }
 
-###results:
+### Results:
 GTA2city:
 
 	| First Header  | Second Header |
@@ -43,7 +43,7 @@ GTA2city:
 
 SYNTHIA2City:
 
-###setup
+### Setup
 
 [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
 Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
@@ -61,7 +61,7 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 (put spatial prior in spatial_prior/gta/ folder)
 [GTA-5](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0)
 
-###usage
+### Usage
 (export PYTHONPATH=PYTHONPATH:./)
 we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
 SYNTHIA2City:
