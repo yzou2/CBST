@@ -1,6 +1,7 @@
 # Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training
 
 By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang 
+
 Proceedings of the European Conference on Computer Vision (ECCV) 2018 (* indicates equal contribution).
 
 The model and code are available for non-commercial research purposes only.
