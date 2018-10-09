@@ -2,7 +2,7 @@
 <<<<<<< HEAD
 
 Requirements:
-MxNet 1.3.0
+[MxNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU)
 PIL
 Python 2.7.x
 
@@ -18,12 +18,12 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 
 [Cityscapes](https://www.cityscapes-dataset.com/)
 
-[SYNTHIA-RAND-CITYSCAPES]()
+[SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
 
 # source trained models 
 (put source trained model in models/ folder)
 [GTA-5](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0)
-[SYNTHIA]()
+[SYNTHIA](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0)
 
 # adapded models
 [GTA2City](https://www.dropbox.com/s/1suk8xs48itd0fa/cityscapes_rna-a1_cls19_s8_ep-0000.params?dl=0)
@@ -31,7 +31,7 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 
 # spatial priors 
 (put spatial prior in spatial_prior/gta/ folder)
-[GTA-5]()
+[GTA-5](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0)
 
 # self-training 
 (export PYTHONPATH=PYTHONPATH:./)
@@ -137,7 +137,8 @@ Contact: yzou2@andrew.cmu.edu
 
 If you finds this codes useful, please cite:
 
-@InProceedings{Zou_2018_ECCV,
+> blockquote
+>> @InProceedings{Zou_2018_ECCV,
 author = {Zou, Yang and Yu, Zhiding and Vijaya Kumar, B.V.K. and Wang, Jinsong},
 title = {Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
 booktitle = {The European Conference on Computer Vision (ECCV)},
