@@ -15,10 +15,11 @@ By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates eq
 0. [Note](#note)
 
 ### Introduction
+
 This code heavily borrow [ResNet-38](https://github.com/itijyou/ademxapp)
 
 ### Requirements:
-The code is tested in the the following enviroment:
+The code runs well in the following enviroment.
 Ubuntu 16.04
 
 [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU)
@@ -38,11 +39,6 @@ year = {2018}
 ### Results:
 GTA2city:
 
-	| First Header  | Second Header |
-	| ------------- | ------------- |
-	| Content Cell  | Content Cell  |
-	| Content Cell  | Content Cell  |
-
 	Class|Road|SW|Build|Wall|Fence|Pole|Traffic Light|Traffic Sign|Veg.|Terrain|Sky|Person|Rider|Car|Truck|Bus|Train|Motor|Bike|Mean
 	---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 	IoU|88.0|56.2|77.0|27.4|22.4|40.7|47.3|40.9|82.4|21.6|60.3|50.2|20.4|83.8|35.0|51.0|15.2|20.6|37.0|46.2
@@ -50,7 +46,7 @@ GTA2city:
 SYNTHIA2City:
 
 ### Setup
-
+- Datasets:
 [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
 Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
 
@@ -58,18 +54,28 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 
 [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
 
-#models 
-(put source trained model in models/ folder)
+- Source pretrained models:
 [GTA-5](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0)
+
 [SYNTHIA](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0)
 
-#spatial priors 
-(put spatial prior in spatial_prior/gta/ folder)
+(put source trained model in models/ folder)
+
+- spatial priors 
+
 [GTA-5](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0)
 
+(Spatial priors are only used in GTA2Cityscapes. Put the prior_array.mat in spatial_prior/gta/ folder)
+
 ### Usage
-(export PYTHONPATH=PYTHONPATH:./)
-we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
+We assume you are working in cbst-master folder.
+
+Set the PYTHONPATH environment variable:
+~~~~
+cd cbst-master
+export PYTHONPATH=PYTHONPATH:./
+~~~~
+
 SYNTHIA2City:
 CBST:
 ~~~~
@@ -83,7 +89,7 @@ python issegm/script-self-paced-self-trained-segresnet.py --num-round 5 --test-s
 ~~~~
 
 For CBST, set "--with-prior False". For ST, set "--kc-policy global" and "--with-prior False".
-
+we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
 
 #evaluate
 Cityscapes
