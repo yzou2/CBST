@@ -66,11 +66,15 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
 SYNTHIA2City:
 CBST:
+~~~~
 python issegm/script-self-paced-self-trained-segresnet.py --num-round 12 --test-scales 1850 --scale-rate-range 0.7,1.3 --dataset synthia --dataset-tgt cityscapes --split train --split-tgt val --data-root /home/datasets/RAND_CITYSCAPES --data-root-tgt /home/datasets/cityscapes/data_original --output spst_syn2city/cbst_eccv_min0-8 --model cityscapes_rna-a1_cls16_s8 --weights models/synthia_rna-a1_cls16_s8_ep-0000.params --batch-images 2 --crop-size 500 --origin-size 1280 --origin-size-tgt 2048 --init-tgt-port 0.2 --init-src-port 0.02 --max-src-port 0.06 --seed-int 0 --mine-port 0.8 --mine-id-number 3 --mine-thresh 0.001 --base-lr 1e-4 --to-epoch 2 --source-sample-policy cumulative --self-training-script issegm/self-paced-self-trained-segresnet-public-v1.py --kc-policy cb --prefetch-threads 2 --gpus 2 --with-prior False
+~~~~
 
 GTA2Cityscapes:
 CBST-SP:
+~~~~
 python issegm/script-self-paced-self-trained-segresnet.py --num-round 5 --test-scales 1850 --scale-rate-range 0.7,1.3 --dataset gta --dataset-tgt cityscapes --split train --split-tgt val --data-root DATA_ROOT_GTA5 --data-root-tgt DATA_ROOT_CITYSCAPES --output spst_gta2city/cbst-sp --model cityscapes_rna-a1_cls19_s8 --weights models/gta_rna-a1_cls19_s8_ep-0000.params --batch-images 2 --crop-size 500 --origin-size-tgt 2048 --init-tgt-port 0.15 --init-src-port 0.03 --seed-int 0 --mine-port 0.8 --mine-id-number 3 --mine-thresh 0.001 --base-lr 1e-4 --to-epoch 2 --source-sample-policy cumulative --self-training-script issegm/self-paced-self-trained-segresnet.py --kc-policy cb --prefetch-threads 2 --gpus 0 --with-prior True
+~~~~
 
 For CBST, set "--with-prior False". For ST, set "--kc-policy global" and "--with-prior False".
 
