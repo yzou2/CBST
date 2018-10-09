@@ -9,14 +9,20 @@ By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates eq
 0. [Introduction](#introduction)
 0. [Citation](#citation)
 0. [Requirements](#requirements)
-0. [Usage](#usage)
 0. [Setup](#models)
+0. [Usage](#usage)
 0. [Results](#results)
 0. [Note](#note)
 
+### Introduction
+This code heavily borrow [ResNet-38](https://github.com/itijyou/ademxapp)
+
 ### Requirements:
+The code is tested in the the following enviroment:
+Ubuntu 16.04
+
 [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU)
-PIL
+
 Python 2.7.x
 
 ### Citation
@@ -81,12 +87,17 @@ For CBST, set "--with-prior False". For ST, set "--kc-policy global" and "--with
 
 #evaluate
 Cityscapes
+~~~~
 
+~~~~
 GTA-5
+~~~~
 
+~~~~
 SYNTHIA
+~~~~
 
-This code heavily borrow [ResNet-38](https://github.com/itijyou/ademxapp)
+~~~~
 
 Contact: yzou2@andrew.cmu.edu
 
