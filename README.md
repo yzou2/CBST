@@ -1,7 +1,9 @@
-## class-balanced self-training
-MXNet implementation of our method for adapting semantic segmentation from the synthetic dataset (source domain) to the real dataset (target domain). Based on this implementation, our result is ranked 3rd in the VisDA Challenge.
+# Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training
 
-Contact: Yi-Hsuan Tsai (wasidennis at gmail dot com) and Wei-Chih Hung (whung8 at ucmerced dot edu)
+By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang 
+Proceedings of the European Conference on Computer Vision (ECCV) 2018 (* indicates equal contribution).
+
+The model and code are available for non-commercial research purposes only.
 
 Requirements:
 [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU)
@@ -9,7 +11,7 @@ PIL
 Python 2.7.x
 
 
-Performance:
+#Performance:
 GTA2city:
 
 	| First Header  | Second Header |
@@ -23,7 +25,7 @@ GTA2city:
 
 SYNTHIA2City:
 
-# data
+# Dataset
 [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
 Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
 
@@ -31,93 +33,16 @@ Since GTA-5 contains images with different resolutions, we recommend resize all 
 
 [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
 
-# source trained models 
+# Source trained models 
 (put source trained model in models/ folder)
 [GTA-5](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0)
 [SYNTHIA](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0)
 
-# adapded models
-[GTA2City](https://www.dropbox.com/s/1suk8xs48itd0fa/cityscapes_rna-a1_cls19_s8_ep-0000.params?dl=0)
-[SYNTHIA2CIty]()
-
-# spatial priors 
+# Spatial priors 
 (put spatial prior in spatial_prior/gta/ folder)
 [GTA-5](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0)
 
-# self-training 
-(export PYTHONPATH=PYTHONPATH:./)
-we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
-GTA2Cityscapes:
-
-CBST-SP:
-
-
-CBST:
-
-ST:
-
-SYNTHIA2City:
-
-CBST:
-
-ST:
-
-# evaluate
-Cityscapes
-
-GTA-5
-
-SYNTHIA
-
-This code heavily borrow [ResNet-38](https://github.com/itijyou/ademxapp)
-
-Contact: yzou2@andrew.cmu.edu
-
-If you finds this codes useful, please cite:
-
-@InProceedings{Zou_2018_ECCV,
-author = {Zou, Yang and Yu, Zhiding and Vijaya Kumar, B.V.K. and Wang, Jinsong},
-title = {Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
-booktitle = {The European Conference on Computer Vision (ECCV)},
-month = {September},
-year = {2018}
-}
-
-=======
-
-Requirements:
-MxNet 1.3.0
-PIL
-Python 2.7.x
-
-
-Performance:
-GTA2city:
-
-SYNTHIA2City:
-
-# data
-[GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
-Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
-
-[Cityscapes](https://www.cityscapes-dataset.com/)
-
-[SYNTHIA-RAND-CITYSCAPES]()
-
-# source trained models 
-(put source trained model in models/ folder)
-[GTA-5](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0)
-[SYNTHIA]()
-
-# adapded models
-[GTA2City](https://www.dropbox.com/s/1suk8xs48itd0fa/cityscapes_rna-a1_cls19_s8_ep-0000.params?dl=0)
-[SYNTHIA2CIty]()
-
-# spatial priors 
-(put spatial prior in spatial_prior/gta/ folder)
-[GTA-5]()
-
-# self-training 
+# Self-training commands
 (export PYTHONPATH=PYTHONPATH:./)
 we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
 SYNTHIA2City:
@@ -152,3 +77,7 @@ booktitle = {The European Conference on Computer Vision (ECCV)},
 month = {September},
 year = {2018}
 }
+
+# Note
+
+07/23/2018: update evaluation code for PyTorch 0.4
