@@ -245,8 +245,7 @@ class FileIter(DataIter):
             h, w = im.shape[:2]
             target_size = npr.randint(target_size_range[0], target_size_range[1] + 1)
             #######################
-            # rate = 1.*target_size / max(h, w)
-            rate = 1. * target_size / max(max_h, max_w)  # modify by yang
+            rate = 1. * target_size / max(max_h, max_w)  
             #######################
             crop_size = int(target_crop_size / rate)
             label_stride = self._label_stride / rate

@@ -126,10 +126,10 @@ def parse_args():
                         default=None, type=int)
     parser.add_argument('--origin-size', dest='origin_size',
                         help='The size of images to crop from in source domain',
-                        default=None, type=int)
+                        default=2048, type=int)
     parser.add_argument('--origin-size-tgt', dest='origin_size_tgt',
                         help='The size of images to crop from in target domain',
-                        default=None, type=int)
+                        default=2048, type=int)
     parser.add_argument('--scale-rate-range', dest='scale_rate_range',
                         help='The range of rescaling',
                         default='0.7,1.3', type=str)
@@ -337,7 +337,8 @@ def get_dataset_specs_tgt(args, model_specs):
         #
         ident_size = True
         #
-        max_shape_src = np.array((1052, 1914))
+        # max_shape_src = np.array((1052, 1914))
+        max_shape_src = np.array((1024, 2048))
         max_shape_tgt = np.array((1024, 2048))
         #
         if args.split in ('train+', 'trainval+'):
@@ -777,6 +778,7 @@ def _val_impl(args, model_specs, logger):
         in_path_prior = 'spatial_prior/{}/prior_array.mat'.format(args.dataset)
         sprior = scipy.io.loadmat(in_path_prior)
         prior_array = sprior["prior_array"].astype(np.float32)
+        #prior_array = np.maximum(prior_array,0)
     ############################ network forward
     for i in xrange(x_num):
         start = time.time()
@@ -862,7 +864,7 @@ def _val_impl(args, model_specs, logger):
                 probmap_max_cls_temp = probmap_max[idx_temp].astype(np.float32)
                 len_cls = probmap_max_cls_temp.size
                 # downsampling by rate 4
-                probmap_cls = probmap_max_cls_temp[0:len_cls:4]
+                probmap_cls = probmap_max_cls_temp[0:len_cls]
                 exec ("%s = np.append(%s,probmap_cls)" % (sname, sname))
         ############################ save prediction
         # save prediction probablity map
@@ -985,8 +987,8 @@ def _val_impl(args, model_specs, logger):
             im_to_save_rwcolor.save(out_path_rwcolor)
 
     ## remove probmap folder
-    # import shutil
-    # shutil.rmtree(save_dir_probmap)
+    import shutil
+    shutil.rmtree(save_dir_probmap)
     ##
 
 if __name__ == "__main__":
