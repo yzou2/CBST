@@ -34,10 +34,10 @@ parser.add_argument('--crop-size', dest='crop_size',
                     default=None, type=int)
 parser.add_argument('--origin-size', dest='origin_size',
                     help='The size of images to crop from in source domain',
-                    default=None, type=int)
+                    default=2048, type=int)
 parser.add_argument('--origin-size-tgt', dest='origin_size_tgt',
                     help='The size of images to crop from in target domain',
-                    default=None, type=int)
+                    default=2048, type=int)
 parser.add_argument('--init-tgt-port', dest='init_tgt_port',
                     help='The initial portion of pixels selected in target dataset, both by global and class-wise threshold',
                     default=0.3, type=float)
