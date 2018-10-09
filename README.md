@@ -1,10 +1,9 @@
 # Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training
 
-By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang 
+By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates equal contribution).
 
-Proceedings of the European Conference on Computer Vision (ECCV) 2018 (* indicates equal contribution).
-
-The model and code are available for non-commercial research purposes only.
+### Update
+- **2018.10.9**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
 
 Requirements:
 [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU)
@@ -79,6 +78,4 @@ month = {September},
 year = {2018}
 }
 
-# Note
-
-07/23/2018: update evaluation code for PyTorch 0.4
+The model and code are available for non-commercial research purposes only.
