@@ -19,12 +19,7 @@ By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates eq
 This code heavily borrow [ResNet-38](https://github.com/itijyou/ademxapp)
 
 ### Requirements:
-The code runs well in the following enviroment.
-Ubuntu 16.04
-
-[MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU)
-
-Python 2.7.x
+The code is tested in Ubuntu 16.04. It is based on [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU) and Python 2.7.12. We use TiTan Xp. The maximum GPU memory consumption is about 7GB.
 
 ### Citation
 If you finds this method or code useful, please cite:
@@ -39,6 +34,13 @@ year = {2018}
 ### Results:
 GTA2city:
 
+	model|top-1|top-5
+	:---:|:---:|:---:
+	[VGG-16](http://www.vlfeat.org/matconvnet/pretrained/)|[28.5%](http://www.vlfeat.org/matconvnet/pretrained/)|[9.9%](http://www.vlfeat.org/matconvnet/pretrained/)
+	ResNet-50|24.7%|7.8%
+	ResNet-101|23.6%|7.1%
+	ResNet-152|23.0%|6.7%
+
 	Class|Road|SW|Build|Wall|Fence|Pole|Traffic Light|Traffic Sign|Veg.|Terrain|Sky|Person|Rider|Car|Truck|Bus|Train|Motor|Bike|Mean
 	---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 	IoU|88.0|56.2|77.0|27.4|22.4|40.7|47.3|40.9|82.4|21.6|60.3|50.2|20.4|83.8|35.0|51.0|15.2|20.6|37.0|46.2
@@ -46,31 +48,29 @@ GTA2city:
 SYNTHIA2City:
 
 ### Setup
-- Datasets:
+We assume you are working in cbst-master folder.
+1. Datasets:
 
-1. Download [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
+- Download [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/) dataset. Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
 
-	Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
+- Download [Cityscapes](https://www.cityscapes-dataset.com/).
 
-2. Download [Cityscapes](https://www.cityscapes-dataset.com/)
+- Download [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/).
 
-	Download [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
+- Put downloaded data in "data" folder.
 
-- Source pretrained models:
-1. Download [source model](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0) trained in GTA-5.
+2. Source pretrained models:
+- Download [source model](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0) trained in GTA-5.
 
-2. Download [source model](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0) trained in SYNTHIA.
+- Download [source model](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0) trained in SYNTHIA.
 
-	(put source trained model in models/ folder)
+- Put source trained models in "models/" folder
 
-- spatial priors 
+3. Spatial priors 
 
-[Spatial priors](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0) from GTA-5
-
-(Spatial priors are only used in GTA2Cityscapes. Put the prior_array.mat in spatial_prior/gta/ folder)
+- Download [Spatial priors](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0) from GTA-5. Spatial priors are only used in GTA2Cityscapes. Put the prior_array.mat in "spatial_prior/gta/" folder.
 
 ### Usage
-We assume you are working in cbst-master folder.
 
 Set the PYTHONPATH environment variable:
 ~~~~
@@ -90,19 +90,19 @@ CBST-SP:
 python issegm/script-self-paced-self-trained-segresnet.py --num-round 5 --test-scales 1850 --scale-rate-range 0.7,1.3 --dataset gta --dataset-tgt cityscapes --split train --split-tgt val --data-root DATA_ROOT_GTA5 --data-root-tgt DATA_ROOT_CITYSCAPES --output spst_gta2city/cbst-sp --model cityscapes_rna-a1_cls19_s8 --weights models/gta_rna-a1_cls19_s8_ep-0000.params --batch-images 2 --crop-size 500 --origin-size-tgt 2048 --init-tgt-port 0.15 --init-src-port 0.03 --seed-int 0 --mine-port 0.8 --mine-id-number 3 --mine-thresh 0.001 --base-lr 1e-4 --to-epoch 2 --source-sample-policy cumulative --self-training-script issegm/self-paced-self-trained-segresnet.py --kc-policy cb --prefetch-threads 2 --gpus 0 --with-prior True
 ~~~~
 
-For CBST, set "--with-prior False". For ST, set "--kc-policy global" and "--with-prior False".
+For CBST, set "--kc-policy cb" and "--with-prior False". For ST, set "--kc-policy global" and "--with-prior False".
 we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".  
 
 #evaluate
-Cityscapes
+Test in Cityscapes (Initial source trained model as example)
 ~~~~
-
+python issegm/evaluate-segresnet.py --data-root DATA_ROOT_CITYSCAPES --output val/cityscapes --dataset cityscapes --phase val --weights models/gta_rna-a1_cls19_s8_ep-0000.params --split val --test-scales 1850 --test-flipping --gpus 0 --no-cudnn
 ~~~~
-GTA-5
+Test in GTA-5
 ~~~~
-
+python issegm/evaluate-segresnet.py --data-root DATA_ROOT_GTA --output val/gta --dataset gta --phase val --weights ../BAK/models/gta_rna-a1_cls19_s8_ep-0000.params --split train --test-scales 1850 --test-flipping --gpus 3 --no-cudnn
 ~~~~
-SYNTHIA
+Test in SYNTHIA
 ~~~~
 
 ~~~~
