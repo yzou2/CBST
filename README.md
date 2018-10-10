@@ -32,7 +32,7 @@ year = {2018}
 }
 
 ### Results:
-GTA2city:
+1. GTA2city:
 
 	model|top-1|top-5
 	:---:|:---:|:---:
@@ -40,6 +40,8 @@ GTA2city:
 	ResNet-50|24.7%|7.8%
 	ResNet-101|23.6%|7.1%
 	ResNet-152|23.0%|6.7%
+
+2. 
 
 	Class|Road|SW|Build|Wall|Fence|Pole|Traffic Light|Traffic Sign|Veg.|Terrain|Sky|Person|Rider|Car|Truck|Bus|Train|Motor|Bike|Mean
 	---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
