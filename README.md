@@ -15,8 +15,7 @@ By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates eq
 0. [Note](#note)
 
 ### Introduction
-
-This code heavily borrow [ResNet-38](https://github.com/itijyou/ademxapp)
+This repository contains the self-training based methods (Class-balanced self-training (with spatial priors) and basic self-training) described in the paper "Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training" (http://openaccess.thecvf.com/content_ECCV_2018/papers/Yang_Zou_Unsupervised_Domain_Adaptation_ECCV_2018_paper.pdf). This method is the core algorithm for the 1st and 3rd winner of [Domain Adaptation of Semantic Segmentation Challenge in CVPR 2018 Workshop on Autonomous Driving (WAD)](http://wad.ai/challenge.html).
 
 ### Requirements:
 The code is tested in Ubuntu 16.04. It is based on [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU) and Python 2.7.12. We use TiTan Xp. The maximum GPU memory consumption is about 7GB.
@@ -34,12 +33,21 @@ year = {2018}
 ### Results:
 1. GTA2city:
 
-	Case|mIoU|Road|SW|Build|Wall|Fence|Pole|Traffic Light|Traffic Sign|Veg.|Terrain|Sky|Person|Rider|Car|Truck|Bus|Train|Motor|Bike
+	Case|mIoU|Road|Sidewalk|Build|Wall|Fence|Pole|Traffic Light|Traffic Sign|Veg.|Terrain|Sky|Person|Rider|Car|Truck|Bus|Train|Motor|Bike
 	---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 	Source|35.4|70.0|23.7|67.8|15.4|18.1|40.2|41.9|25.3|78.8|11.7|31.4|62.9|29.8|60.1|21.5|26.8|7.7|28.1|12.0
-	Adapted|46.2|88.0|56.2|77.0|27.4|22.4|40.7|47.3|40.9|82.4|21.6|60.3|50.2|20.4|83.8|35.0|51.0|15.2|20.6|37.0
+	ST|41.5|90.1|56.8|77.9|28.5|23.0|41.5|45.2|39.6|84.8|26.4|49.2|59.0|27.4|82.3|39.7|45.6|20.9|34.8|46.2
+	CBST|45.2|86.8|46.7|76.9|26.3|24.8|42.0|46.0|38.6|80.7|15.7|48.0|57.3|27.9|78.2|24.5|49.6|17.7|25.5|45.1
+	CBST-SP|46.2|88.0|56.2|77.0|27.4|22.4|40.7|47.3|40.9|82.4|21.6|60.3|50.2|20.4|83.8|35.0|51.0|15.2|20.6|37.0
 
 2. SYNTHIA2City:
+
+	Case|mIoU|Road|Sidewalk|Build|Wall|Fence|Pole|Traffic Light|Traffic Sign|Veg.|Sky|Person|Rider|Car|Bus|Motor|Bike
+	---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+	Source|29.2|32.6|21.5|46.5|4.8|0.1|26.5|14.8|13.1|70.8|60.3|56.6|3.5|74.1|20.4|8.9|13.1
+	ST|32.2|38.2|19.6|70.2|3.9|0.0|31.9|17.6|17.2|82.4|68.3|63.1|5.3|78.4|11.2|0.8|7.5
+	CBST|42.5|53.6|23.7|75.0|12.5|0.3|36.4|23.5|26.3|84.8|74.7|67.2|17.5|84.5|28.4|15.2|55.8
+
 
 ### Setup
 We assume you are working in cbst-master folder.
@@ -100,6 +108,9 @@ Test in SYNTHIA
 ~~~~
 
 ~~~~
+
+### Note
+This code is based on [ResNet-38](https://github.com/itijyou/ademxapp).
 
 Contact: yzou2@andrew.cmu.edu
 
