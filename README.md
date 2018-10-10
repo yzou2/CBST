@@ -34,20 +34,11 @@ year = {2018}
 ### Results:
 1. GTA2city:
 
-	model|top-1|top-5
-	:---:|:---:|:---:
-	[VGG-16](http://www.vlfeat.org/matconvnet/pretrained/)|[28.5%](http://www.vlfeat.org/matconvnet/pretrained/)|[9.9%](http://www.vlfeat.org/matconvnet/pretrained/)
-	ResNet-50|24.7%|7.8%
-	ResNet-101|23.6%|7.1%
-	ResNet-152|23.0%|6.7%
-
-2. 
-
 	Class|Road|SW|Build|Wall|Fence|Pole|Traffic Light|Traffic Sign|Veg.|Terrain|Sky|Person|Rider|Car|Truck|Bus|Train|Motor|Bike|Mean
 	---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 	IoU|88.0|56.2|77.0|27.4|22.4|40.7|47.3|40.9|82.4|21.6|60.3|50.2|20.4|83.8|35.0|51.0|15.2|20.6|37.0|46.2
 
-SYNTHIA2City:
+2. SYNTHIA2City:
 
 ### Setup
 We assume you are working in cbst-master folder.
