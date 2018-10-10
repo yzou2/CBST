@@ -48,20 +48,20 @@ SYNTHIA2City:
 ### Setup
 - Datasets:
 
-Download [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
+1. Download [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/)
 
-Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
+	Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
 
-Download [Cityscapes](https://www.cityscapes-dataset.com/)
+2. Download [Cityscapes](https://www.cityscapes-dataset.com/)
 
-Download [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
+	Download [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/)
 
 - Source pretrained models:
-Download [source model](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0) trained in GTA-5.
+1. Download [source model](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0) trained in GTA-5.
 
-Download [source model](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0) trained in SYNTHIA.
+2. Download [source model](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0) trained in SYNTHIA.
 
-(put source trained model in models/ folder)
+	(put source trained model in models/ folder)
 
 - spatial priors 
 
