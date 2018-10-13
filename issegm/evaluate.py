@@ -20,17 +20,19 @@ from util import transformer as ts
 from util import util
 from util.lr_scheduler import FixedScheduler, LinearScheduler, PolyScheduler
 
-from data import FileIter, make_divisible, parse_split_file
-
-
-def parse_split_file_test(dataset, split, data_root=''):
-    split_filename = 'issegm/data/{}/{}.lst'.format(dataset, split)
+def parse_split_file(dataset, split, data_root=''):
+    split_filename = 'issegm/data_list/{}/{}.lst'.format(dataset, split)
     image_list = []
+    label_list = []
     with open(split_filename) as f:
         for item in f.readlines():
             fields = item.strip().split('\t')
             image_list.append(os.path.join(data_root, fields[0]))
-    return image_list
+            label_list.append(os.path.join(data_root, fields[1]))
+    return image_list, label_list
+
+def make_divisible(v, divider):
+    return int(np.ceil(float(v) / divider) * divider)
 
 def parse_model_label(args):
     assert args.model is not None
@@ -56,26 +58,8 @@ def parse_model_label(args):
         feat_stride = int(fields[i][len('s'):])
         i += 1
 
-    # learning rate
-    lr_params = {
-        'type': 'fixed',
-        'base': 0.1,
-        'args': None,
-    }
-    if args.base_lr is not None:
-        lr_params['base'] = args.base_lr
-    # linear
-    if args.lr_type in ('linear',):
-        lr_params['type'] = args.lr_type
-    elif args.lr_type in ('poly',):
-        lr_params['type'] = args.lr_type
-    elif args.lr_type == 'step':
-        lr_params['args'] = {'step': [int(_) for _ in args.lr_steps.split(',')],
-                             'factor': 0.1}
-
     model_specs = {
         # model
-        'lr_params': lr_params,
         'net_type': net_type,
         'net_name': net_name,
         'classes': classes,
@@ -101,44 +85,8 @@ def parse_args():
                         help='The output dir.')
     parser.add_argument('--model', default=None,
                         help='The unique label of this model.')
-    parser.add_argument('--batch-images', dest='batch_images',
-                        help='The number of images per batch.',
-                        default=None, type=int)
-    parser.add_argument('--crop-size', dest='crop_size',
-                        help='The size of network input during training.',
-                        default=None, type=int)
-    parser.add_argument('--origin-size', dest='origin_size',
-                        help='The size of images to crop from.',
-                        default=None, type=int)
-    parser.add_argument('--scale-rate-range', dest='scale_rate_range',
-                        help='The range of rescaling',
-                        default='0.7,1.3', type=str)
     parser.add_argument('--weights', default=None,
                         help='The path of a pretrained model.')
-    #
-    parser.add_argument('--lr-type', dest='lr_type',
-                        help='The learning rate scheduler, e.g., fixed(default)/step/linear',
-                        default=None, type=str)
-    parser.add_argument('--base-lr', dest='base_lr',
-                        help='The lr to start from.',
-                        default=None, type=float)
-    parser.add_argument('--lr-steps', dest='lr_steps',
-                        help='The steps when to reduce lr.',
-                        default=None, type=str)
-    parser.add_argument('--weight-decay', dest='weight_decay',
-                        help='The weight decay in sgd.',
-                        default=0.0005, type=float)
-    #
-    parser.add_argument('--from-epoch', dest='from_epoch',
-                        help='The epoch to start from.',
-                        default=None, type=int)
-    parser.add_argument('--stop-epoch', dest='stop_epoch',
-                        help='The index of epoch to stop.',
-                        default=None, type=int)
-    parser.add_argument('--to-epoch', dest='to_epoch',
-                        help='The number of epochs to run.',
-                        default=None, type=int)
-    #
     parser.add_argument('--phase',
                         help='Phase of this call, e.g., train/val.',
                         default='train', type=str)
@@ -159,31 +107,16 @@ def parse_args():
                         help='If save the predicted pixel-wise labels.',
                         default=True, action='store_false')
     #
-    parser.add_argument('--kvstore', dest='kvstore',
-                        help='The type of kvstore, e.g., local/device.',
-                        default='device', type=str)
     parser.add_argument('--prefetch-threads', dest='prefetch_threads',
                         help='The number of threads to fetch data.',
                         default=1, type=int)
-    parser.add_argument('--prefetcher', dest='prefetcher',
-                        help='The type of prefetercher, e.g., process/thread.',
-                        default='thread', type=str)
     parser.add_argument('--cache-images', dest='cache_images', 
                         help='If cache images, e.g., 0/1',
                         default=None, type=int)
     parser.add_argument('--log-file', dest='log_file',
                         default=None, type=str)
-    parser.add_argument('--check-start', dest='check_start',
-                        help='The first epoch to snapshot.',
-                        default=1, type=int)
-    parser.add_argument('--check-step', dest='check_step',
-                        help='The steps between adjacent snapshots.',
-                        default=4, type=int)
     parser.add_argument('--debug',
                         help='True means logging debug info.',
-                        default=False, action='store_true')
-    parser.add_argument('--backward-do-mirror', dest='backward_do_mirror',
-                        help='True means less gpu memory usage.',
                         default=False, action='store_true')
     parser.add_argument('--no-cudnn', dest='no_mxnet_cudnn_autotune_default',
                         help='True means deploy cudnn.',
@@ -196,9 +129,6 @@ def parse_args():
 
     if args.debug:
         os.environ['MXNET_ENGINE_TYPE'] = 'NaiveEngine'
-
-    if args.backward_do_mirror:
-        os.environ['MXNET_BACKWARD_DO_MIRROR'] = '1'
 
     if args.no_mxnet_cudnn_autotune_default:
         os.environ['MXNET_CUDNN_AUTOTUNE_DEFAULT'] = '0'
@@ -215,27 +145,12 @@ def parse_args():
             assert '_ep-' in args.weights
             parts = osp.basename(args.weights).split('_ep-')
             args.model = '_'.join(parts[:-1])
-        #
-        if args.phase == 'train':
-            if args.from_epoch is None:
-                assert '_ep-' in args.weights
-                parts = os.path.basename(args.weights).split('_ep-')
-                assert len(parts) == 2
-                from_model = parts[0]
-                if from_model == args.model:
-                    parts = os.path.splitext(os.path.basename(args.weights))[0].split('-')
-                    args.from_epoch = int(parts[-1])
 
     if args.model is None:
         raise NotImplementedError('Missing argument: args.model')
-
-    if args.from_epoch is None:
-        args.from_epoch = 0
     
     if args.log_file is None:
-        if args.phase == 'train':
-            args.log_file = '{}.log'.format(args.model)
-        elif args.phase == 'val':
+        if args.phase == 'val':
             suffix = ''
             if args.split != 'val':
                 suffix = '_{}'.format(args.split)
@@ -255,17 +170,36 @@ def parse_args():
 def get_dataset_specs(args, model_specs):
     dataset = model_specs['dataset']
     meta = {}
-    meta_path = osp.join('issegm/data', dataset, 'meta.pkl')
-    if osp.isfile(meta_path):
-        with open(meta_path) as f:
-            meta = cPickle.load(f)
-
+    cache_images = True
     cmap_path = 'data/shared/cmap.pkl'
-    cache_images = args.phase == 'train'
     mx_workspace = 1650
     if dataset == 'cityscapes':
         sys.path.insert(0, 'data/cityscapesscripts/helpers')
         from labels import id2label, trainId2label
+        label_2_id = 255 * np.ones((256,))
+        for l in id2label:
+            if l in (-1, 255):
+                continue
+            label_2_id[l] = id2label[l].trainId
+        id_2_label = np.array([trainId2label[_].id for _ in trainId2label if _ not in (-1, 255)])
+        valid_labels = sorted(set(id_2_label.ravel()))
+        #
+        cmap = np.zeros((256,3), dtype=np.uint8)
+        for i in id2label.keys():
+            cmap[i] = id2label[i].color
+        #
+        ident_size = True
+        #
+        max_shape = np.array((1024, 2048))
+        #
+        if args.split in ('train+', 'trainval+'):
+            cache_images = False
+        #
+        if args.phase in ('val',):
+            mx_workspace = 8192
+    elif dataset == 'cityscapes16':
+        sys.path.insert(0, 'data/cityscapesscripts/helpers')
+        from labels_cityscapes_synthia import id2label, trainId2label
         label_2_id = 255 * np.ones((256,))
         for l in id2label:
             if l in (-1, 255):
@@ -403,96 +337,6 @@ def _make_dirs(path):
     if not osp.isdir(path):
         os.makedirs(path)
 
-def _train_impl(args, model_specs, logger):
-    if len(args.output) > 0:
-        _make_dirs(args.output)
-    # dataiter
-    dataset_specs = get_dataset_specs(args, model_specs)
-    scale, mean_, _ = _get_scalemeanstd()
-    if scale > 0:
-        mean_ /= scale
-    margs = argparse.Namespace(**model_specs)
-    dargs = argparse.Namespace(**dataset_specs)
-    dataiter = FileIter(dataset=margs.dataset,
-                        split=args.split,
-                        data_root=args.data_root,
-                        sampler='random',
-                        batch_images=args.batch_images,
-                        meta=dataset_specs,
-                        rgb_mean=mean_,
-                        feat_stride=margs.feat_stride,
-                        label_stride=margs.feat_stride,
-                        origin_size=args.origin_size,
-                        crop_size=args.crop_size,
-                        scale_rate_range=[float(_) for _ in args.scale_rate_range.split(',')],
-                        transformer=None,
-                        transformer_image=ts.Compose(_get_transformer_image()),
-                        prefetch_threads=args.prefetch_threads,
-                        prefetcher_type=args.prefetcher,)
-    dataiter.reset()
-    # optimizer
-    assert args.to_epoch is not None
-    if args.stop_epoch is not None:
-        assert args.stop_epoch > args.from_epoch and args.stop_epoch <= args.to_epoch
-    else:
-        args.stop_epoch = args.to_epoch
-    from_iter = args.from_epoch * dataiter.batches_per_epoch
-    to_iter = args.to_epoch * dataiter.batches_per_epoch
-    lr_params = model_specs['lr_params']
-    base_lr = lr_params['base']
-    if lr_params['type'] == 'fixed':
-        scheduler = FixedScheduler()
-    elif lr_params['type'] == 'step':
-        left_step = []
-        for step in lr_params['args']['step']:
-            if from_iter > step:
-                base_lr *= lr_params['args']['factor']
-                continue
-            left_step.append(step - from_iter)
-        model_specs['lr_params']['step'] = left_step
-        scheduler = mx.lr_scheduler.MultiFactorScheduler(**lr_params['args'])
-    elif lr_params['type'] == 'linear':
-        scheduler = LinearScheduler(updates=to_iter+1, frequency=50,
-                                    stop_lr=min(base_lr/100., 1e-6),
-                                    offset=from_iter)
-    elif lr_params['type'] == 'poly':
-        scheduler = PolyScheduler(updates=to_iter+1, frequency=50,
-                                    stop_lr=min(base_lr/100., 1e-8),
-                                    power=0.9,
-                                    offset=from_iter)
-    optimizer_params = {
-        'learning_rate': base_lr,
-        'momentum': 0.9,
-        'wd': args.weight_decay,
-        'lr_scheduler': scheduler,
-        'rescale_grad': 1.0/len(args.gpus.split(',')),
-    }
-    # initializer
-    net_args = None
-    net_auxs = None
-    if args.weights is not None:
-        net_args, net_auxs = mxutil.load_params_from_file(args.weights)
-    initializer = mx.init.Xavier(rnd_type='gaussian', factor_type='in', magnitude=2)
-    #
-    to_model = osp.join(args.output, '{}_ep'.format(args.model))
-    mod = _get_module(args, margs, dargs)
-    mod.fit(
-        dataiter,
-        eval_metric=_get_metric(),
-        # batch_end_callback=mx.callback.Speedometer(dataiter.batch_size, 1),
-        batch_end_callback=mx.callback.log_train_metric(10, auto_reset=False),
-        epoch_end_callback=mx.callback.do_checkpoint(to_model),
-        kvstore=args.kvstore,
-        optimizer='sgd',
-        optimizer_params=optimizer_params,
-        initializer=initializer,
-        arg_params=net_args,
-        aux_params=net_auxs,
-        allow_missing=args.from_epoch == 0,
-        begin_epoch=args.from_epoch,
-        num_epoch=args.stop_epoch,
-    )
-
 
 def _interp_preds_as_impl(num_classes, im_size, pred_stride, imh, imw, pred):
     imh0, imw0 = im_size
@@ -613,11 +457,11 @@ def _val_impl(args, model_specs, logger):
     assert len(crop_sizes) == 1, 'multi-scale testing not implemented'
     label_stride = margs.feat_stride
 
-    save_dir = osp.join(args.output, osp.splitext(args.log_file)[0])
-    save_dir_ful = osp.join(args.output, 'full')
-    save_dir_trainId = osp.join(args.output, 'full_trainId')
-    _make_dirs(save_dir)
-    _make_dirs(save_dir_ful)
+    save_dir_color = osp.join(args.output, 'color')
+    save_dir_labelId = osp.join(args.output, 'labelId')
+    save_dir_trainId = osp.join(args.output, 'trainId')
+    _make_dirs(save_dir_color)
+    _make_dirs(save_dir_labelId)
     _make_dirs(save_dir_trainId)
     
     x_num = len(image_list)
@@ -697,8 +541,8 @@ def _val_impl(args, model_specs, logger):
             # #
             # save predicted label with trainIDs, labelIDs, colors
             out_path_trainId = osp.join(save_dir_trainId, '{}.png'.format(sample_name))
-            out_path_labelId = osp.join(save_dir_ful, '{}.png'.format(sample_name))
-            out_path_color = osp.join(save_dir, '{}.png'.format(sample_name))
+            out_path_labelId = osp.join(save_dir_labelId, '{}.png'.format(sample_name))
+            out_path_color = osp.join(save_dir_color, '{}.png'.format(sample_name))
             im_to_save_trainId = Image.fromarray(pred_label_trainId.astype(np.uint8))
             im_to_save = Image.fromarray(pred_label.astype(np.uint8))
             im_to_save_labelId = im_to_save.copy()
@@ -720,7 +564,7 @@ def _val_impl(args, model_specs, logger):
             label = np.array(Image.open(label_path), np.uint8)
         
         # save correctly labeled pixels into an image
-            out_path = osp.join(save_dir, 'correct', '{}.png'.format(sample_name))
+            out_path = osp.join(save_dir_color, 'correct', '{}.png'.format(sample_name))
             _make_dirs(osp.dirname(out_path))
             invalid_mask = np.logical_not(np.in1d(label, dargs.valid_labels)).reshape(label.shape)
             Image.fromarray((invalid_mask*255 + (label == pred_label)*127).astype(np.uint8)).save(out_path)
@@ -741,9 +585,7 @@ if __name__ == "__main__":
     logger.info('start with arguments %s', args)
     logger.info('and model specs %s', model_specs)
 
-    if args.phase == 'train':
-        _train_impl(args, model_specs, logger)
-    elif args.phase == 'val':
+    if args.phase == 'val':
         _val_impl(args, model_specs, logger)
     else:
         raise NotImplementedError('Unknown phase: {}'.format(args.phase))

@@ -1,12 +1,15 @@
 """
 file iterator for image semantic segmentation
 """
-import os
 import time
 from PIL import Image
+from operator import itemgetter
+import os
+import os.path as osp
 
 import numpy as np
 import numpy.random as npr
+import copy
 
 from mxnet.io import DataBatch, DataIter
 from mxnet.ndarray import array
@@ -15,20 +18,40 @@ from util.io import BatchFetcherGroup
 from util.sampler import FixedSampler, RandomSampler
 from util.util import get_interp_method, load_image_with_cache
 
-
-def parse_split_file(dataset, split, data_root=''):
-    split_filename = 'issegm/data/{}/{}.lst'.format(dataset, split)
+def parse_split_file(dataset, split, num_sel_source = 500, num_source = 500, seed_int = 0, dataset_tgt='', split_tar='', data_root='', data_root_tgt='',gpus='0'):
+    split_filename = 'issegm/data_list/{}/{}.lst'.format(dataset, split)
     image_list = []
     label_list = []
+    origin_list = [] # record the origin of the image. 0 for source domain and 1 for target domain.
+    # count0 = 0
     with open(split_filename) as f:
         for item in f.readlines():
             fields = item.strip().split('\t')
             image_list.append(os.path.join(data_root, fields[0]))
             label_list.append(os.path.join(data_root, fields[1]))
-    return image_list, label_list
+            origin_list.append(0)
+    np.random.seed(seed_int)
+    sel_idx = list( np.random.choice(num_source, num_sel_source, replace=False) )
+    image_list = list( itemgetter(*sel_idx)(image_list) )
+    label_list = list( itemgetter(*sel_idx)(label_list) )
+    origin_list = list(itemgetter(*sel_idx)(origin_list))
+
+    if not dataset_tgt == '':
+        split_filename_tgt = 'issegm/data_list/{}/{}_training_gpu{}.lst'.format(dataset_tgt, split_tar,gpus)
+        with open(split_filename_tgt) as f:
+            for item in f.readlines():
+                fields = item.strip().split('\t')
+                image_list.append(os.path.join(data_root_tgt, fields[0]))
+                label_list.append(os.path.join(fields[1]))
+                origin_list.append(1)
+    return image_list, label_list, origin_list
 
 def make_divisible(v, divider):
     return int(np.ceil(float(v) / divider) * divider)
+
+def _make_dirs(path):
+    if not osp.isdir(path):
+        os.makedirs(path)
 
 class FileIter(DataIter):
     """FileIter object for image semantic segmentation.
@@ -65,6 +88,12 @@ class FileIter(DataIter):
                  dataset,
                  split,
                  data_root,
+                 num_sel_source = 50,
+                 num_source=100,
+                 seed_int=0,
+                 dataset_tgt = '',
+                 split_tgt = '',
+                 data_root_tgt = '',
                  data_name = 'data',
                  label_name = 'softmax_label',
                  sampler = 'fixed',
@@ -78,6 +107,7 @@ class FileIter(DataIter):
                  label_stride = 32,
                  label_steps = 1,
                  origin_size = None,
+                 origin_size_tgt=None,
                  crop_size = 0,
                  scale_rate_range = None,
                  crops_per_image = 1,
@@ -92,6 +122,7 @@ class FileIter(DataIter):
         assert crop_size > 0
         
         self._meta = meta
+        self._seed_int = seed_int
         self._data_name = data_name
         self._label_name = label_name
         self._has_gt = has_gt
@@ -100,6 +131,7 @@ class FileIter(DataIter):
         self._label_stride = label_stride
         self._label_steps = label_steps
         self._origin_size = origin_size
+        self._origin_size_tgt = origin_size_tgt
         self._crop_size = make_divisible(crop_size, self._feat_stride)
         self._crops_per_image = crops_per_image
         #
@@ -109,10 +141,13 @@ class FileIter(DataIter):
         self._transformer = transformer
         self._transformer_image = transformer_image
         self._reader = self._read if self._transformer is None else self._read_transformer
+        self._gpus = meta['gpus']
         
         self._ignore_label = 255
 
-        self._image_list, self._label_list = parse_split_file(dataset, split, data_root)
+        self._image_list, self._label_list, self._origin_list = parse_split_file(dataset, split, num_sel_source,
+                                                                                 num_source, self._seed_int, dataset_tgt,
+                                                                                 split_tgt, data_root, data_root_tgt,self._gpus)
         self._perm_len = len(self._image_list)
         if sampler == 'fixed':
             sampler = FixedSampler(self._perm_len)
@@ -177,13 +212,14 @@ class FileIter(DataIter):
         return tuple(output)
             
     def _read(self, db_inds):
-        max_h, max_w = self._meta['max_shape']
-        label_2_id = self._meta['label_2_id']
-        
-        target_size_range = [int(_*self._origin_size) for _ in self._scale_rate_range]
-        min_rate = 1.*target_size_range[0] / max(max_h, max_w)
+        label_2_id_src = self._meta['label_2_id_src']
+        label_2_id_tgt = self._meta['label_2_id_tgt']
+        mine_port = self._meta['mine_port']
+        mine_id = self._meta['mine_id']
+        mine_id_priority = self._meta['mine_id_priority']
+        ##
+
         target_crop_size = self._crop_size
-        max_crop_size = int(target_crop_size / min_rate)
         label_size = target_crop_size // self._label_stride
         assert label_size * self._label_stride == target_crop_size
         label_per_image = label_size**2
@@ -194,13 +230,23 @@ class FileIter(DataIter):
             output_label = np.zeros((self._batch_images, label_per_image), np.single)
             output.append([output_data, output_label])
         for i,db_ind in enumerate(db_inds):
+            if self._origin_list[db_ind] == 0:
+                max_h, max_w = self._meta['max_shape_src']
+                target_size_range = [int(_ * self._origin_size) for _ in self._scale_rate_range]
+                min_rate = 1. * target_size_range[0] / max(max_h, max_w)
+                max_crop_size = int(target_crop_size / min_rate)
+            elif self._origin_list[db_ind] == 1:
+                max_h, max_w = self._meta['max_shape_tgt']
+                target_size_range = [int(_ * self._origin_size_tgt) for _ in self._scale_rate_range]
+                min_rate = 1. * target_size_range[0] / max(max_h, max_w)
+                max_crop_size = int(target_crop_size / min_rate)
             # load an image
             im = np.array(load_image_with_cache(self._image_list[db_ind], self._cache).convert('RGB'))
             h, w = im.shape[:2]
-            assert h <= max_h and w <= max_w
-            # randomize the following cropping
             target_size = npr.randint(target_size_range[0], target_size_range[1] + 1)
-            rate = 1.*target_size / max(h, w)
+            #######################
+            rate = 1. * target_size / max(max_h, max_w)  
+            #######################
             crop_size = int(target_crop_size / rate)
             label_stride = self._label_stride / rate
             # make sure there is a all-zero border
@@ -208,20 +254,61 @@ class FileIter(DataIter):
             # allow shifting within the grid between the used adjacent labels
             d1 = max(0, int(label_stride - d0))
             # prepare the image
-            nim_size = max(max_crop_size, max_h, max_w) + d1 + d0
+            ##########
+            nim_size = max(max_crop_size, h, w) + d1 + d0
+            ##########
             nim = np.zeros((nim_size, nim_size, 3), np.single)
             nim += self._data_mean
-            nim[d0:d0+h, d0:d0+w, :] = im
+            nim[d0:d0 + h, d0:d0 + w, :] = im
             # label
             nlabel = self._ignore_label * np.ones((nim_size, nim_size), np.uint8)
+            ##########
             label = np.array(load_image_with_cache(self._label_list[db_ind], self._cache))
-            if label_2_id is not None:
-                label = label_2_id[label]
-            nlabel[d0:d0+h, d0:d0+w] = label
+            # label = olabel[shift_h:shift_h + h, shift_w:shift_w + w]
+            ##########
+            if self._origin_list[db_ind] == 0:
+                label = label_2_id_src[label]
+            elif self._origin_list[db_ind] == 1:
+                label = label_2_id_tgt[label]
+            nlabel[d0:d0 + h, d0:d0 + w] = label
             # crop
             real_label_stride = label_stride / self._label_steps
-            sy = npr.randint(0, max(1, real_label_stride, d0 + h - crop_size + 1), self._crops_per_image)
-            sx = npr.randint(0, max(1, real_label_stride, d0 + w - crop_size + 1), self._crops_per_image)
+            mine_flag = npr.rand(1) < mine_port
+            sel_mine_id = 0
+            ##########  few class patch mining
+            if mine_flag:
+                mlabel = self._ignore_label * np.ones((nim_size, nim_size), np.uint8)
+                mlabel[d0+int(crop_size/2):max(1, real_label_stride, d0 + h - int(crop_size/2) - 1 ),d0+int(crop_size/2):max(1,real_label_stride,d0+w-int(crop_size/2) - 1)] = nlabel[d0+int(crop_size/2):max(1,real_label_stride,d0+h-int(crop_size/2) - 1),d0+int(crop_size/2):max(1,real_label_stride,d0+w-int(crop_size/2) - 1)]
+                label_unique = np.unique(mlabel)
+                mine_id_priority_temp = np.array([a for a in mine_id_priority if a in label_unique])
+                if mine_id_priority_temp.size != 0:
+                    mine_id_exist = mine_id_priority_temp
+                else:
+                    mine_id_temp = np.array([a for a in mine_id if a in label_unique])
+                    mine_id_exist = np.array([b for b in mine_id_temp])
+                mine_id_exist_size = mine_id_exist.size
+                if mine_id_exist_size == 0:
+                    sy = npr.randint(0, max(1, real_label_stride, d0 + h - crop_size + 1), self._crops_per_image)
+                    sx = npr.randint(0, max(1, real_label_stride, d0 + w - crop_size + 1), self._crops_per_image)
+                else:
+                    sel_mine_loc = int( np.floor(npr.uniform(0,mine_id_exist_size)) )
+                    sel_mine_id = mine_id_exist[sel_mine_loc]
+                    mine_id_loc = np.where(mlabel == sel_mine_id) # tuple
+                    mine_id_len = len(mine_id_loc[0])
+                    seed_loc = npr.randint(0, mine_id_len,self._crops_per_image)
+                    if self._crops_per_image == 1:
+                        sy = mine_id_loc[0][seed_loc]
+                        sx = mine_id_loc[1][seed_loc]
+                    else:
+                        sy = int(np.ones(self._crops_per_image))
+                        sx = int(np.ones(self._crops_per_image))
+                        for i in np.arange(self._crops_per_image):
+                            sy[i] = mine_id_loc[0][seed_loc[i]]
+                            sx[i] = mine_id_loc[1][seed_loc[i]]
+            ########## few class patch mining
+            else:
+                sy = npr.randint(0, max(1, real_label_stride, d0 + h - crop_size + 1), self._crops_per_image)
+                sx = npr.randint(0, max(1, real_label_stride, d0 + w - crop_size + 1), self._crops_per_image)
             dyx = np.arange(0, label_stride, real_label_stride).astype(np.int32)[:self._label_steps].tolist()
             dy = dyx * self._label_steps
             dx = sum([[_] * self._label_steps for _ in dyx], [])
@@ -229,15 +316,24 @@ class FileIter(DataIter):
                 do_flipping = npr.randint(2) == 0
                 for j in xrange(locs_per_crop):
                     # cropping & resizing image
-                    tim = nim[sy[k]+dy[j]:sy[k]+dy[j]+crop_size, sx[k]+dx[j]:sx[k]+dx[j]+crop_size, :].astype(np.uint8)
-                    assert tim.shape[0] == tim.shape[1] == crop_size
+                    if mine_flag and mine_id_exist_size != 0:
+                        remain_minus = crop_size - int(crop_size / 2)
+                        tim = nim[sy[k] + dy[j] - int(crop_size / 2):sy[k] + dy[j] + remain_minus ,sx[k] + dx[j] - int(crop_size / 2):sx[k] + dx[j] + remain_minus, :].astype(np.uint8)
+                        assert tim.shape[0] == tim.shape[1] == crop_size
+                        tlabel = nlabel[sy[k] + dy[j] - int(crop_size / 2):sy[k] + dy[j] + remain_minus,sx[k] + dx[j] - int(crop_size / 2):sx[k] + dx[j] + remain_minus]
+                        assert tlabel.shape[0] == tlabel.shape[1] == crop_size
+                    else:
+                        tim = nim[sy[k] + dy[j]:sy[k] + dy[j] + crop_size, sx[k] + dx[j]:sx[k] + dx[j] + crop_size,:].astype(np.uint8)
+                        assert tim.shape[0] == tim.shape[1] == crop_size
+                        tlabel = nlabel[sy[k] + dy[j]:sy[k] + dy[j] + crop_size,sx[k] + dx[j]:sx[k] + dx[j] + crop_size]
+                        assert tlabel.shape[0] == tlabel.shape[1] == crop_size
+
                     interp_method = get_interp_method(crop_size, crop_size, target_crop_size, target_crop_size)
                     rim = Image.fromarray(tim).resize((target_crop_size,target_crop_size), interp_method)
                     rim = np.array(rim)
                     # cropping & resizing label
-                    tlabel = nlabel[sy[k]+dy[j]:sy[k]+dy[j]+crop_size, sx[k]+dx[j]:sx[k]+dx[j]+crop_size]
-                    assert tlabel.shape[0] == tlabel.shape[1] == crop_size
                     rlabel = Image.fromarray(tlabel).resize((target_crop_size,target_crop_size), Image.NEAREST)
+                    slabel = np.array(rlabel).copy()
                     lsy = self._label_stride / 2
                     lsx = self._label_stride / 2
                     rlabel = np.array(rlabel)[lsy : target_crop_size : self._label_stride, lsx : target_crop_size : self._label_stride]
@@ -245,6 +341,15 @@ class FileIter(DataIter):
                     if do_flipping:
                         rim = rim[:, ::-1, :]
                         rlabel = rlabel[:, ::-1]
+		    # for debug
+                    #output_patch = 'patch_debug/'
+                    #_make_dirs(output_patch)
+                    #save_time = str(time.time())
+                    #output_patch_cls = osp.join(output_patch,str(sel_mine_id))
+                    #_make_dirs(output_patch_cls)
+                    #sample_name = osp.splitext(osp.basename(self._image_list[db_ind]))[0]
+                    #Image.fromarray(rim).save(osp.join(output_patch_cls,sample_name + '_img.png'))
+                    #Image.fromarray(slabel).save(osp.join(output_patch_cls,sample_name + '_label.png'))
                     # transformers
                     if self._transformer_image is not None:
                         rim = self._transformer_image(rim)
@@ -278,9 +383,9 @@ class FileIter(DataIter):
 
     def next(self):
         if self._fetcher.iter_next():
-            tic = time.time()
+            # tic = time.time()
             data_batch = self._fetcher.get()
-            print 'Waited for {} seconds'.format(time.time() - tic)
+            # print 'Waited for {} seconds'.format(time.time() - tic)
         else:
             raise StopIteration
         

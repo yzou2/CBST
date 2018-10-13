@@ -26,10 +26,10 @@ from util import transformer as ts
 from util import util
 from util.lr_scheduler import FixedScheduler, LinearScheduler, PolyScheduler
 
-from data_mix_PatchMine import FileIter, make_divisible
+from data import FileIter, make_divisible
 
 def parse_split_file_tgt(dataset_tgt, split_tgt, data_root=''):
-    split_filename = 'issegm/data/{}/{}.lst'.format(dataset_tgt, split_tgt)
+    split_filename = 'issegm/data_list/{}/{}.lst'.format(dataset_tgt, split_tgt)
     image_list = []
     label_gt_list = []
     image_data_list = []
@@ -300,10 +300,6 @@ def get_dataset_specs_tgt(args, model_specs):
     dataset = args.dataset
     dataset_tgt = args.dataset_tgt
     meta = {}
-    meta_path = osp.join('issegm/data', dataset_tgt, 'meta.pkl')
-    if osp.isfile(meta_path):
-        with open(meta_path) as f:
-            meta = cPickle.load(f)
 
     mine_id = None
     mine_id_priority = None
@@ -583,7 +579,7 @@ def _train_impl(args, model_specs, logger):
     margs = argparse.Namespace(**model_specs)
     dargs = argparse.Namespace(**dataset_specs_tgt)
     # number of list_lines
-    split_filename = 'issegm/data/{}/{}.lst'.format(margs.dataset, args.split)
+    split_filename = 'issegm/data_list/{}/{}.lst'.format(margs.dataset, args.split)
     num_source = 0
     with open(split_filename) as f:
         for item in f.readlines():
@@ -711,10 +707,12 @@ def _val_impl(args, model_specs, logger):
     if addr_weights is not None:
         net_args, net_auxs = mxutil.load_params_from_file(addr_weights)
     ######
-    save_dir = osp.join(args.output, str(cround), osp.splitext(args.log_file)[0])
+    save_dir = osp.join(args.output, str(cround), 'results')
+    save_dir_self_train = osp.join(args.output, str(cround), 'self_train')
+
     # pseudo labels
-    save_dir_pseudo_labelIds = osp.join(save_dir, 'pseudo_labelIds')
-    save_dir_pseudo_color = osp.join(save_dir, 'pseudo_color')
+    save_dir_pseudo_labelIds = osp.join(save_dir_self_train, 'pseudo_labelIds')
+    save_dir_pseudo_color = osp.join(save_dir_self_train, 'pseudo_color')
     # without sp
     save_dir_nplabelIds = osp.join(save_dir, 'nplabelIds')
     save_dir_npcolor = osp.join(save_dir, 'npcolor')
@@ -731,14 +729,14 @@ def _val_impl(args, model_specs, logger):
     _make_dirs(save_dir_stats)
     if args.with_prior == 'True':
         # with sp
-        save_dir_splabelIds = osp.join(save_dir, 'splabelIds')
-        save_dir_spcolor = osp.join(save_dir, 'spcolor')
+        save_dir_splabelIds = osp.join(save_dir_self_train, 'splabelIds')
+        save_dir_spcolor = osp.join(save_dir_self_train, 'spcolor')
         _make_dirs(save_dir_splabelIds)
         _make_dirs(save_dir_spcolor)
     if args.kc_policy == 'cb':
         # reweighted prediction map
-        save_dir_rwlabelIds = osp.join(save_dir, 'rwlabelIds')
-        save_dir_rwcolor = osp.join(save_dir, 'rwcolor')
+        save_dir_rwlabelIds = osp.join(save_dir_self_train, 'rwlabelIds')
+        save_dir_rwcolor = osp.join(save_dir_self_train, 'rwcolor')
         _make_dirs(save_dir_rwlabelIds)
         _make_dirs(save_dir_rwcolor)
     ######
@@ -864,7 +862,7 @@ def _val_impl(args, model_specs, logger):
                 probmap_max_cls_temp = probmap_max[idx_temp].astype(np.float32)
                 len_cls = probmap_max_cls_temp.size
                 # downsampling by rate 4
-                probmap_cls = probmap_max_cls_temp[0:len_cls]
+                probmap_cls = probmap_max_cls_temp[0:len_cls:4]
                 exec ("%s = np.append(%s,probmap_cls)" % (sname, sname))
         ############################ save prediction
         # save prediction probablity map
@@ -896,7 +894,7 @@ def _val_impl(args, model_specs, logger):
                 scorer.update(pred_label, label, i)
             scorer_np.update(pred_label_np, label, i)
     # save target training list
-    fout = 'issegm/data/{}/{}_training_gpu{}.lst'.format(args.dataset_tgt,args.split_tgt,args.gpus)
+    fout = 'issegm/data_list/{}/{}_training_gpu{}.lst'.format(args.dataset_tgt,args.split_tgt,args.gpus)
     fo = open(fout, "w")
     for idx_image in range(x_num):
         sample_name = osp.splitext(osp.basename(image_list_tgt[idx_image]))[0]
