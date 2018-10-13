@@ -3,7 +3,7 @@
 By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates equal contribution).
 
 ### Update
-- **2018.10.9**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
+- **2018.10.13**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
 
 ### Contents
 0. [Introduction](#introduction)
@@ -30,7 +30,7 @@ month = {September},
 year = {2018}
 }
 
-If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 licence file.
+The model and code are available for non-commercial research purposes only. If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 licence file.
 
 ### Results:
 0. GTA2city:
@@ -58,37 +58,32 @@ We assume you are working in cbst-master folder.
 - Download [Cityscapes](https://www.cityscapes-dataset.com/).
 - Download [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/).
 - Put downloaded data in "data" folder.
-0. Source pretrained models:
+1. Source pretrained models:
 - Download [source model](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0) trained in GTA-5.
 - Download [source model](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0) trained in SYNTHIA.
 - Put source trained models in "models/" folder
-0. Spatial priors 
+2. Spatial priors 
 - Download [Spatial priors](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0) from GTA-5. Spatial priors are only used in GTA2Cityscapes. Put the prior_array.mat in "spatial_prior/gta/" folder.
 
 ### Usage
-
 0. Set the PYTHONPATH environment variable:
 ~~~~
 cd cbst-master
 export PYTHONPATH=PYTHONPATH:./
 ~~~~
-
-0. GTA2Cityscapes:
+1. GTA2Cityscapes:
 - CBST-SP:
 ~~~~
 python issegm/solve_AO.py --num-round 5 --test-scales 1850 --scale-rate-range 0.7,1.3 --dataset gta --dataset-tgt cityscapes --split train --split-tgt val --data-root DATA_ROOT_GTA5 --data-root-tgt DATA_ROOT_CITYSCAPES --output gta2city/cbst-sp --model cityscapes_rna-a1_cls19_s8 --weights models/gta_rna-a1_cls19_s8_ep-0000.params --batch-images 2 --crop-size 500 --origin-size-tgt 2048 --init-tgt-port 0.15 --init-src-port 0.03 --seed-int 0 --mine-port 0.8 --mine-id-number 3 --mine-thresh 0.001 --base-lr 1e-4 --to-epoch 2 --source-sample-policy cumulative --self-training-script issegm/solve_ST.py --kc-policy cb --prefetch-threads 2 --gpus 0 --with-prior True
 ~~~~
-
-0. SYNTHIA2City:
+2. SYNTHIA2City:
 - CBST:
 ~~~~
 python issegm/solve_AO.py --num-round 12 --test-scales 1850 --scale-rate-range 0.7,1.3 --dataset synthia --dataset-tgt cityscapes --split train --split-tgt val --data-root /home/datasets/RAND_CITYSCAPES --data-root-tgt /home/datasets/cityscapes/data_original --output syn2city/cbst --model cityscapes_rna-a1_cls16_s8 --weights models/synthia_rna-a1_cls16_s8_ep-0000.params --batch-images 2 --crop-size 500 --origin-size 1280 --origin-size-tgt 2048 --init-tgt-port 0.2 --init-src-port 0.02 --max-src-port 0.06 --seed-int 0 --mine-port 0.8 --mine-id-number 3 --mine-thresh 0.001 --base-lr 1e-4 --to-epoch 2 --source-sample-policy cumulative --self-training-script issegm/solve_ST.py --kc-policy cb --prefetch-threads 2 --gpus 2 --with-prior False
 ~~~~
-
-0. For CBST, set "--kc-policy cb" and "--with-prior False". For ST, set "--kc-policy global" and "--with-prior False".
+3. For CBST, set "--kc-policy cb" and "--with-prior False". For ST, set "--kc-policy global" and "--with-prior False".
 we use a small class patch mining strategy to mine the patches including small classes. To turn off small class mining, set "--mine-port 0.0".
-
-0. Evaluation
+4. Evaluation
 - Test in Cityscapes for model compatible with GTA-5 (Initial source trained model as example)
 ~~~~
 python issegm/evaluate.py --data-root DATA_ROOT_CITYSCAPES --output val/gta-city --dataset cityscapes --phase val --weights models/gta_rna-a1_cls19_s8_ep-0000.params --split val --test-scales 2048 --test-flipping --gpus 0 --no-cudnn
@@ -108,9 +103,6 @@ python issegm/evaluate.py --data-root DATA_ROOT_SYNTHIA --output val/synthia --d
 
 ### Note
 - This code is based on [ResNet-38](https://github.com/itijyou/ademxapp).
-
 - Due to the randomness, the self-training results may slightly vary in each run. Usually the best results will be obtained in 2nd/3rd round.
 
 Contact: yzou2@andrew.cmu.edu
-
-The model and code are available for non-commercial research purposes only.
