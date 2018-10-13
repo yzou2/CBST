@@ -21,7 +21,7 @@ This repository contains the self-training based methods described in the paper 
 The code is tested in Ubuntu 16.04. It is implemented based on [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU) and Python 2.7.12. For GPU usage, the maximum GPU memory consumption is about 7GB in a single NVIDIA TiTan Xp.
 
 ### Citation
-If you finds this method or code useful, please cite:
+If you use this code, please cite:
 > @InProceedings{Zou_2018_ECCV,
 author = {Zou, Yang and Yu, Zhiding and Vijaya Kumar, B.V.K. and Wang, Jinsong},
 title = {Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
@@ -29,6 +29,8 @@ booktitle = {The European Conference on Computer Vision (ECCV)},
 month = {September},
 year = {2018}
 }
+
+If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 licence file.
 
 ### Results:
 0. GTA2city:
@@ -52,24 +54,15 @@ year = {2018}
 ### Setup
 We assume you are working in cbst-master folder.
 0. Datasets:
-
 - Download [GTA-5](https://download.visinf.tu-darmstadt.de/data/from_games/) dataset. Since GTA-5 contains images with different resolutions, we recommend resize all images to 1052x1914. 
-
 - Download [Cityscapes](https://www.cityscapes-dataset.com/).
-
 - Download [SYNTHIA-RAND-CITYSCAPES](http://synthia-dataset.net/download/808/).
-
 - Put downloaded data in "data" folder.
-
 0. Source pretrained models:
 - Download [source model](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0) trained in GTA-5.
-
 - Download [source model](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0) trained in SYNTHIA.
-
 - Put source trained models in "models/" folder
-
 0. Spatial priors 
-
 - Download [Spatial priors](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0) from GTA-5. Spatial priors are only used in GTA2Cityscapes. Put the prior_array.mat in "spatial_prior/gta/" folder.
 
 ### Usage
