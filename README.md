@@ -3,7 +3,7 @@
 By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates equal contribution).
 
 ### Update
-- **2018.10.13**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
+- **2018.10.14**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
 
 ### Contents
 0. [Introduction](#introduction)
