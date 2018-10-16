@@ -30,7 +30,7 @@ month = {September},
 year = {2018}
 }
 
-The model and code are available for non-commercial research purposes only. If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 license.
+The model and code are available for non-commercial (NC) research purposes only. If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 license.
 
 ### Results:
 0. GTA2city:
