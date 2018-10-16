@@ -7,7 +7,7 @@ By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates eq
 
 ### Contents
 0. [Introduction](#introduction)
-0. [Citation](#citation)
+0. [Citation and license](#citation)
 0. [Requirements](#requirements)
 0. [Setup](#models)
 0. [Usage](#usage)
@@ -30,7 +30,7 @@ month = {September},
 year = {2018}
 }
 
-The model and code are available for non-commercial research purposes only. If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 licence file.
+The model and code are available for non-commercial research purposes only. If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 license.
 
 ### Results:
 0. GTA2city:
