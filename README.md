@@ -22,13 +22,13 @@ The code is tested in Ubuntu 16.04. It is implemented based on [MXNet 1.3.0](htt
 
 ### Citation
 If you use this code, please cite:
-> @InProceedings{Zou_2018_ECCV,
-author = {Zou, Yang and Yu, Zhiding and Vijaya Kumar, B.V.K. and Wang, Jinsong},
-title = {Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
-booktitle = {The European Conference on Computer Vision (ECCV)},
-month = {September},
-year = {2018}
-}
+	@inproceedings{zou2018unsupervised,
+	  title={Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
+	  author={Zou, Yang and Yu, Zhiding and Kumar, BVK Vijaya and Wang, Jinsong},
+	  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
+	  pages={289--305},
+	  year={2018}
+	}
 
 The model and code are available for non-commercial (NC) research purposes only. If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 license.
 
