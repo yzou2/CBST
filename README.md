@@ -22,6 +22,7 @@ The code is tested in Ubuntu 16.04. It is implemented based on [MXNet 1.3.0](htt
 
 ### Citation
 If you use this code, please cite:
+
 	@inproceedings{zou2018unsupervised,
 	  title={Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training},
 	  author={Zou, Yang and Yu, Zhiding and Kumar, BVK Vijaya and Wang, Jinsong},
