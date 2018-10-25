@@ -1,4 +1,4 @@
-# Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training
+# Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training
 
 By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates equal contribution).
 
@@ -15,7 +15,7 @@ By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates eq
 0. [Note](#note)
 
 ### Introduction
-This repository contains the self-training based methods described in the paper ["Unsupervised Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training"](http://openaccess.thecvf.com/content_ECCV_2018/papers/Yang_Zou_Unsupervised_Domain_Adaptation_ECCV_2018_paper.pdf). Self-training (ST), Class-balanced self-training (CBST) with Spatial Priors (CBST-SP) are implemented. CBST is the core algorithm for the 1st and 3rd winner of [Domain Adaptation of Semantic Segmentation Challenge in CVPR 2018 Workshop on Autonomous Driving (WAD)](http://wad.ai/challenge.html).
+This repository contains the self-training based methods described in the paper ["Domain Adaptation for Semantic Segmentation via Class-Balanced Self-Training"](https://arxiv.org/pdf/1810.07911.pdf). Self-training (ST), Class-balanced self-training (CBST) with Spatial Priors (CBST-SP) are implemented. CBST is the core algorithm for the 1st and 3rd winner of [Domain Adaptation of Semantic Segmentation Challenge in CVPR 2018 Workshop on Autonomous Driving (WAD)](http://wad.ai/challenge.html).
 
 ### Requirements:
 The code is tested in Ubuntu 16.04. It is implemented based on [MXNet 1.3.0](https://mxnet.apache.org/install/index.html?platform=Linux&language=Python&processor=GPU) and Python 2.7.12. For GPU usage, the maximum GPU memory consumption is about 7GB in a single NVIDIA TiTan Xp.
