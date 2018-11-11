@@ -3,6 +3,7 @@
 By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates equal contribution).
 
 ### Update
+- **2018.11.11**: Source domain training code for GTA-5 and SYNTHIA
 - **2018.10.14**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
 
 ### Contents
