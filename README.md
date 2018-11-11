@@ -114,6 +114,7 @@ python issegm/train_src.py --gpus 0,1,2,3 --split train --data-root DATA_ROOT_GT
 ~~~~
 python issegm/train_src.py --gpus 0,1,2,3 --split train --data-root DATA_ROOT_SYNTHIA --output synthia_train --model synthia_rna-a1_cls16_s8 --batch-images 16 --crop-size 500 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 50 --kvstore local --prefetch-threads 16 --prefetcher process --cache-images 0 --backward-do-mirror --origin-size 1280
 ~~~~
+- Train in Cityscapes, please check the [official ResNet-38 repository](https://github.com/itijyou/ademxapp).
 
 ### Note
 - This code is based on [ResNet-38](https://github.com/itijyou/ademxapp).
