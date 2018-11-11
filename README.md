@@ -3,7 +3,7 @@
 By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates equal contribution).
 
 ### Update
-- **2018.11.11**: Source domain training code for GTA-5 and SYNTHIA
+- **2018.11.11**: source domain training code for GTA-5 and SYNTHIA uploaded
 - **2018.10.14**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
 
 ### Contents
@@ -108,15 +108,15 @@ python issegm/evaluate.py --data-root DATA_ROOT_SYNTHIA --output val/synthia --d
 5. Train in source domain
 - Train in GTA-5
 ~~~~
-python issegm/train_src.py --gpus 0,1,2,3 --split train --data-root DATA_ROOT_GTA --output gta_train --model gta_rna-a1_cls19_s8 --batch-images 16 --crop-size 500 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 20 --kvstore local --prefetch-threads 16 --prefetcher process --cache-images 0 --backward-do-mirror --origin-size 1914
+python issegm/train_src.py --gpus 0,1,2,3 --split train --data-root DATA_ROOT_GTA --output gta_train --model gta_rna-a1_cls19_s8 --batch-images 16 --crop-size 500 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 30 --kvstore local --prefetch-threads 16 --prefetcher process --cache-images 0 --backward-do-mirror --origin-size 1914
 ~~~~
 - Train in SYNTHIA
 ~~~~
-python issegm/train_src.py --gpus 0,1,2,3 --split train --data-root DATA_ROOT_SYNTHIA --output synthia_train --model synthia_rna-a1_cls16_s8 --batch-images 16 --crop-size 500 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 20 --kvstore local --prefetch-threads 16 --prefetcher process --cache-images 0 --backward-do-mirror --origin-size 1280
+python issegm/train_src.py --gpus 0,1,2,3 --split train --data-root DATA_ROOT_SYNTHIA --output synthia_train --model synthia_rna-a1_cls16_s8 --batch-images 16 --crop-size 500 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 50 --kvstore local --prefetch-threads 16 --prefetcher process --cache-images 0 --backward-do-mirror --origin-size 1280
 ~~~~
 
 ### Note
 - This code is based on [ResNet-38](https://github.com/itijyou/ademxapp).
-- Due to the randomness, the self-training results may slightly vary in each run. Usually the best results will be obtained in 2nd/3rd round.
+- Due to the randomness, the self-training results may slightly vary in each run. Usually the best results will be obtained in 2nd/3rd round. For training in source domain, the best model usually appears during the initial 30 epoches. 
 
 Contact: yzou2@andrew.cmu.edu
