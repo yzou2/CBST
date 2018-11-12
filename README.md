@@ -65,7 +65,7 @@ We assume you are working in cbst-master folder.
 - Download [source model](https://www.dropbox.com/s/idnnk398hf6u3x9/gta_rna-a1_cls19_s8_ep-0000.params?dl=0) trained in GTA-5.
 - Download [source model](https://www.dropbox.com/s/l6oxhxhovn2l38p/synthia_rna-a1_cls16_s8_ep-0000.params?dl=0) trained in SYNTHIA.
 - For ImageNet pre-traine model, download [model in dropbox](https://www.dropbox.com/s/n2eewzy7bn7lhk0/ilsvrc-cls_rna-a1_cls1000_ep-0001.params?dl=0), provided by [official ResNet-38 repository](https://github.com/itijyou/ademxapp).
-- Put source trained models in "models/" folder
+- Put source trained and ImageNet pre-trained models in "models/" folder
 2. Spatial priors 
 - Download [Spatial priors](https://www.dropbox.com/s/o6xac8r3z30huxs/prior_array.mat?dl=0) from GTA-5. Spatial priors are only used in GTA2Cityscapes. Put the prior_array.mat in "spatial_prior/gta/" folder.
 
@@ -118,6 +118,6 @@ python issegm/train_src.py --gpus 0,1,2,3 --split train --data-root DATA_ROOT_SY
 
 ### Note
 - This code is based on [ResNet-38](https://github.com/itijyou/ademxapp).
-- Due to the randomness, the self-training results may slightly vary in each run. Usually the best results will be obtained in 2nd/3rd round. For training in source domain, the best model usually appears during the initial 30 epoches. 
+- Due to the randomness, the self-training results may slightly vary in each run. Usually the best results will be obtained in 2nd/3rd round. For training in source domain, the best model usually appears during the first 30 epoches. Optimal model appearing in initial stage is also possible.
 
 Contact: yzou2@andrew.cmu.edu
