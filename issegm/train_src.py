@@ -260,6 +260,10 @@ def get_dataset_specs(args, model_specs):
         with open(meta_path) as f:
             meta = cPickle.load(f)
 
+    label_2_id = None
+    id_2_label = None
+    ident_size = False
+    cmap = None
     cmap_path = 'data/shared/cmap.pkl'
     cache_images = args.phase == 'train'
     mx_workspace = 1650
