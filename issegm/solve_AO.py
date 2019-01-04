@@ -124,7 +124,7 @@ def main():
         else:
             raise NotImplementedError('Unknown source sample policy: {}'.format(args.source_sample_policy))
 
-        # run validation
+        # validation and generate pseudo-label map
         cmd_val = ['python', args.self_training_script, '--dataset', args.dataset,'--dataset-tgt', args.dataset_tgt,'--data-root',args.data_root,
                    '--data-root-tgt', args.data_root_tgt,'--split-tgt', args.split_tgt, '--output', args.output, '--model', args.model, '--phase', 'val',
                    '--weights', addr_weights,'--mine-id-number', str(args.mine_id_number), '--test-scales', str(args.test_scales), '--gpus',args.gpus,
@@ -133,7 +133,7 @@ def main():
         for path in execute(cmd_val):
             print(path, end="")
 
-        # update parameters for the following training stage
+        # model retraining
         cmd_val = ['python',args.self_training_script,'--gpus',args.gpus,'--dataset',args.dataset,'--split',args.split,'--dataset-tgt', args.dataset_tgt,
                    '--split-tgt',args.split_tgt,'--data-root',args.data_root,'--data-root-tgt',args.data_root_tgt,'--output',args.output,
                    '--init-src-port', str(src_port),'--model', args.model,'--batch-images',str(args.batch_images),'--crop-size', str(args.crop_size),
@@ -141,11 +141,11 @@ def main():
                    '--prefetch-threads',str(args.prefetch_threads),'--prefetcher','process','--mine-id-address', mine_address,
                    '--mine-port', str(args.mine_port),'--mine-thresh', str(args.mine_thresh),'--cache-images','0','--backward-do-mirror',
                    '--origin-size', str(args.origin_size),'--origin-size-tgt', str(args.origin_size_tgt),'--seed-int', str(rand_seed), '--phase','train']
-        # run validation
+        # run codes
         for path in execute(cmd_val):
             print(path, end="")
 
-        # update parameters for the following validation stage
+        # update parameters for the following pseduo-label generation stage
         addr_weights = args.output + '/' + str(cround) + '/' + args.model + '_ep-%04d.params' % (to_epoch)
         to_epoch = to_epoch + args.epr
         lr = lr/math.sqrt(2)
