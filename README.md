@@ -3,7 +3,7 @@
 By Yang Zou*, Zhiding Yu*, Vijayakumar Bhagavatula, Jinsong Wang (* indicates equal contribution).
 
 ### Update
-- **2018.09.11**: check out our new paper ["Confidence Regularized Self-Training"](https://arxiv.org/pdf/1908.09822.pdf) (ICCV 2019, Oral), which investigates confidence regularization in self-training systematically. The [pytorch code](https://github.com/yzou2/CRST) based on CBST will be released soon.
+- **2019.10.10**: check out our new paper ["Confidence Regularized Self-Training"](https://arxiv.org/pdf/1908.09822.pdf) (ICCV 2019, Oral), which investigates confidence regularization in self-training systematically. The [pytorch code](https://github.com/yzou2/CRST) based on CBST are released.
 - **2018.11.11**: source domain training code for GTA-5 and SYNTHIA uploaded
 - **2018.10.14**: code release for GTA-5 to Cityscapes and SYNTHIA to Cityscapes
 
@@ -31,6 +31,14 @@ If you use this code, please cite:
 	  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
 	  pages={289--305},
 	  year={2018}
+	}
+	
+	
+	@inproceedings{zou2018unsupervised,
+	  title={Confidence Regularized Self-Training},
+	  author={Zou, Yang and Yu, Zhiding, Liu Xiaofeng, Kumar, BVK Vijaya and Wang, Jinsong},
+	  booktitle={Proceedings of the IEEE International Conference on Computer Vision},
+	  year={2019}
 	}
 
 The model and code are available for non-commercial (NC) research purposes only. If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 license.
