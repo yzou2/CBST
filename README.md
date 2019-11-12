@@ -34,11 +34,12 @@ If you use this code, please cite:
 	}
 	
 	
-	@inproceedings{Zou_2019_ICCV,
-	  title={Confidence Regularized Self-Training},
-	  author={Zou, Yang and Yu, Zhiding, Liu Xiaofeng, Kumar, BVK Vijaya and Wang, Jinsong},
-	  booktitle={Proceedings of the IEEE International Conference on Computer Vision},
-	  year={2019}
+	@InProceedings{Zou_2019_ICCV,
+	author = {Zou, Yang and Yu, Zhiding and Liu, Xiaofeng and Kumar, B.V.K. Vijaya and Wang, Jinsong},
+	title = {Confidence Regularized Self-Training},
+	booktitle = {The IEEE International Conference on Computer Vision (ICCV)},
+	month = {October},
+	year = {2019}
 	}
 
 The model and code are available for non-commercial (NC) research purposes only. If you modify the code and want to redistribute, please include the CC-BY-NC-SA-4.0 license.
