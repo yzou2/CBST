@@ -34,7 +34,7 @@ If you use this code, please cite:
 	}
 	
 	
-	@inproceedings{zou2018unsupervised,
+	@inproceedings{Zou_2019_ICCV,
 	  title={Confidence Regularized Self-Training},
 	  author={Zou, Yang and Yu, Zhiding, Liu Xiaofeng, Kumar, BVK Vijaya and Wang, Jinsong},
 	  booktitle={Proceedings of the IEEE International Conference on Computer Vision},
